@@ -6,6 +6,7 @@
 // -------------
 // [Version]
 // 1.0.0 初版
+// 1.0.1 プレイヤー発見時にコモンイベントが発生しない不具合を修正
 // ---------------------------------------------------
 //  移植元:MKR_PlayerSensor.js [ver.3.0.0]
 // ---------------------------------------------------
@@ -1197,13 +1198,7 @@
     };
 
     Game_Interpreter.prototype.setupReservedCommonEventEx = function(eventId) {
-        if ($gameTemp.isCommonEventReserved()) {
-            this.setup($gameTemp.reservedCommonEvent().list, eventId);
-            $gameTemp.clearCommonEvent();
-            return true;
-        } else {
-            return false;
-        }
+        this.setupReservedCommonEvent();
     };
 
     const _Game_Interpreter_setup = Game_Interpreter.prototype.setup;
