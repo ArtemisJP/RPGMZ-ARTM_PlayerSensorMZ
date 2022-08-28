@@ -7,6 +7,7 @@
 // [Version]
 // 1.0.0 初版
 // 1.0.1 プレイヤー発見時にコモンイベントが発生しない不具合を修正
+// 1.0.2 未使用関数の削除、関数名を一部変更（MKR⇒ARTM）
 // ---------------------------------------------------
 //  移植元:MKR_PlayerSensor.js [ver.3.0.0]
 // ---------------------------------------------------
@@ -1083,7 +1084,7 @@
     //  ・プレイヤー探索制御プラグインコマンドを定義
     //=========================================================================
     function _eventId() {
-        return $gameTemp.getEventId_MKR() || 0;
+        return $gameTemp.getEventId_ARTM() || 0;
     }
 
     function toAryArgs(args) {
@@ -1151,17 +1152,21 @@
     const _Game_Temp_initialize = Game_Temp.prototype.initialize;
     Game_Temp.prototype.initialize = function() {
         _Game_Temp_initialize.call(this);
-        this._eventId_MKR = 0;
+        this._eventId_ARTM = 0;
     };
 
-    Game_Temp.prototype.getEventId_MKR = function() {
-        return this._eventId_MKR;
+    Game_Temp.prototype.getEventId_ARTM = function() {
+        return this._eventId_ARTM;
     };
 
-    Game_Temp.prototype.setEventId_MKR = function(eventId) {
-        if (this.getEventId_MKR() !== eventId) {
-            this._eventId_MKR = eventId;
+    Game_Temp.prototype.setEventId_ARTM = function(eventId) {
+        if (this.getEventId_ARTM() !== eventId) {
+            this._eventId_ARTM = eventId;
         }
+    };
+
+    Game_Temp.prototype.getInterpreter_ARTM = function() {
+        return $gameMap._interpreter;
     };
 
     //=========================================================================
@@ -1197,19 +1202,15 @@
         }
     };
 
-    Game_Interpreter.prototype.setupReservedCommonEventEx = function(eventId) {
-        this.setupReservedCommonEvent();
-    };
-
     const _Game_Interpreter_setup = Game_Interpreter.prototype.setup;
     Game_Interpreter.prototype.setup = function(list, eventId) {
         _Game_Interpreter_setup.call(this, list, eventId);
-        $gameTemp.setEventId_MKR(eventId);
+        $gameTemp.setEventId_ARTM(eventId);
     };
 
     const _Game_Interpreter_executeCommand = Game_Interpreter.prototype.executeCommand;
     Game_Interpreter.prototype.executeCommand = function() {
-        $gameTemp.setEventId_MKR(this.eventId());
+        $gameTemp.setEventId_ARTM(this.eventId());
         return _Game_Interpreter_executeCommand.call(this);
     };
 
@@ -2009,9 +2010,10 @@
                 $gameTemp.requestBalloon(this, this._foundBallon);
             }
             if (this._foundCommon > 0) {
+                const interpreter = $gameTemp.getInterpreter_ARTM();
                 $gameTemp.reserveCommonEvent(this._foundCommon);
-                if ($gameMap._interpreter) {
-                    $gameMap._interpreter.setupReservedCommonEventEx(this.eventId());
+                if (interpreter) {
+                    interpreter.setupReservedCommonEvent();
                 }
             }
         } else {
@@ -2049,9 +2051,10 @@
                 $gameTemp.requestBalloon(this, this._lostBallon);
             }
             if (this._lostCommon > 0) {
+                const interpreter = $gameTemp.getInterpreter_ARTM();
                 $gameTemp.reserveCommonEvent(this._lostCommon);
-                if ($gameMap._interpreter) {
-                    $gameMap._interpreter.setupReservedCommonEventEx(this.eventId());
+                if (interpreter) {
+                    interpreter.setupReservedCommonEvent();
                 }
             }
         } else {
